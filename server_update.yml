@@ -1,0 +1,30 @@
+# Bu playbook ubuntu sunucunuzu günceller ve belirmiş olduğunuz telegram adresine mesaj atar
+
+- name: Update
+  hosts: all  # will only work in this group
+  become: true  # Privilege escalation için gerekli (sudo gibi)
+  tasks:
+    - name: packege update
+      apt:
+        update_cache: yes
+
+    - name: update distribution
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+
+    - name: System reboot
+      reboot:
+        reboot_timeout: 300
+        pre_reboot_delay: 30
+
+    - name: Send notify to Telegram
+      community.general.telegram:
+       token: '5747162738:AAEUqTkdSNTBPUJtmNsyGF2C8TZ5sAk6XIw'
+       api_args:
+         chat_id: 461400076
+         parse_mode: "markdown"
+         text: "Ansible playbook tamamlandi. Sunucular güncellendi ve yeniden başlatildi."
+         disable_web_page_preview: true
+         disable_notification: true
